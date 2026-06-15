@@ -41,6 +41,81 @@ import {
 import { motion, AnimatePresence } from "motion/react";
 import { jsPDF } from "jspdf";
 
+const translations: Record<string, {ar: string, fr: string}> = {
+  "Maroc 2026-2030": { ar: "المغرب 2026-2030", fr: "Maroc 2026-2030" },
+  "Expert IA Génération Augmentée": { ar: "خبير معزز بالذكاء الاصطناعي", fr: "Expert IA Génération Augmentée" },
+  "Maroc Entreprise Financement": { ar: "تمويل ومقاولات المغرب", fr: "Maroc Entreprise Financement" },
+  "Pour une stratégie de la croissance": { ar: "من أجل استراتيجية النمو", fr: "Pour une stratégie de la croissance" },
+  "Réinitialiser": { ar: "إعادة ضبط", fr: "Réinitialiser" },
+  "Conforme": { ar: "مطابق لـ", fr: "Conforme" },
+  "Nouveau Dossier": { ar: "ملف جديد", fr: "Nouveau Dossier" },
+  "Profil de la PME & Projet d'Export": { ar: "ملف الشركة ومشروع التصدير", fr: "Profil de la PME & Projet d'Export" },
+  "Nom de l'entreprise ou Marque": { ar: "اسم الشركة أو العلامة التجارية", fr: "Nom de l'entreprise ou Marque" },
+  "Secteur d'activité": { ar: "قطاع النشاط", fr: "Secteur d'activité" },
+  "Région d'origine au Maroc": { ar: "جهة المنشأ بالمغرب", fr: "Région d'origine au Maroc" },
+  "Générer l'Analyse Bancaire": { ar: "توليد التحليل البنكي", fr: "Générer l'Analyse Bancaire" },
+  "Télécharger le Dossier": { ar: "تحميل الملف", fr: "Télécharger le Dossier" },
+  "Rapport IA": { ar: "تقرير الذكاء الاصطناعي", fr: "Rapport IA" },
+  "Checklist CRI": { ar: "قائمة المركز الجهوي للإستثمار", fr: "Checklist CRI" },
+  "Outils & Formulaires": { ar: "أدوات ونماذج", fr: "Outils & Formulaires" },
+  "Options de financement bancaire et subventions": { ar: "خيارات التمويل البنكي والدعم", fr: "Options de financement bancaire et subventions" },
+  "Un Copilote intelligent, moderne, synthétique et pratique. Orienté entrepreneur pour :": { ar: "مساعد ذكي وعصري وعملي موجه للمقاول من أجل:", fr: "Un Copilote intelligent, moderne, synthétique et pratique. Orienté entrepreneur pour :" },
+  "L’Ingénierie financière :": { ar: "الهندسة المالية:", fr: "L’Ingénierie financière :" },
+  "Identifier les garanties et solutions de co-financement Tamwilcom adaptées à votre activité.": { ar: "تحديد الضمانات وحلول التمويل المشترك من تمويلكم الملائمة لنشاطك.", fr: "Identifier les garanties et solutions de co-financement Tamwilcom adaptées à votre activité." },
+  "L’Accompagnement Export :": { ar: "المواكبة في التصدير:", fr: "L’Accompagnement Export :" },
+  "Structurer votre développement en conformité avec la réglementation des changes et de la douane.": { ar: "هيكلة تطورك وفقاً لقوانين الصرف والجمارك.", fr: "Structurer votre développement en conformité avec la réglementation des changes et de la douane." },
+  "La Simplification Administrative :": { ar: "التبسيط الإداري:", fr: "La Simplification Administrative :" },
+  "Générer vos statuts de SARL personnalisés et préparer votre dossier unique pour le Centre Régional d'Investissement (CRI).": { ar: "إعداد نظامك الأساسي للشركة (SARL) وتحضير الملف الموحد للمركز الجهوي للاستثمار.", fr: "Générer vos statuts de SARL personnalisés et préparer votre dossier unique pour le Centre Régional d'Investissement (CRI)." },
+  "Le Business Plan :": { ar: "مخطط الأعمال:", fr: "Le Business Plan :" },
+  "Rédiger des synthèses financières solides prêtes pour les banques partenaires.": { ar: "صياغة ملخصات مالية قوية جاهزة للأبناك الشريكة.", fr: "Rédiger des synthèses financières solides prêtes pour les banques partenaires." },
+  "⚡ Charger un profil type pour tester instantanément :": { ar: "⚡ اختر نموذجاً جاهزاً للتجربة الفورية:", fr: "⚡ Charger un profil type pour tester instantanément :" },
+  "Simuler": { ar: "محاكاة", fr: "Simuler" },
+  "Chiffre d'affaires annuel": { ar: "رقم المعاملات السنوي", fr: "Chiffre d'affaires annuel" },
+  "Besoin clé de financement": { ar: "الاحتياج الأساسي للتمويل", fr: "Besoin clé de financement" },
+  "Zone ciblée & Expérience": { ar: "المنطقة المستهدفة والخبرة", fr: "Zone ciblée & Expérience" },
+  "Produit ou service exporté": { ar: "المنتج أو الخدمة المصدرة", fr: "Produit ou service exporté" },
+  "Avez-vous déjà exporté auparavant ?": { ar: "هل سبق لك التصدير من قبل؟", fr: "Avez-vous déjà exporté auparavant ?" },
+  "Oui, j'ai une première expérience": { ar: "نعم، لدي تجربة أولية", fr: "Oui, j'ai une première expérience" },
+  "Non, je suis primo-exportateur": { ar: "لا، أنا مصدر لأول مرة", fr: "Non, je suis primo-exportateur" },
+  "Marché africain ciblé": { ar: "السوق الإفريقية المستهدفة", fr: "Marché africain ciblé" },
+  "Zone d'exportation cible en Afrique subsaharienne": { ar: "منطقة التصدير المستهدفة في إفريقيا جنوب الصحراء", fr: "Zone d'exportation cible en Afrique subsaharienne" },
+  "Produit ou Service à exporter": { ar: "المنتج أو الخدمة المراد تصديرها", fr: "Produit ou Service à exporter" },
+  "Expérience antérieure à l'exportation ?": { ar: "هل لديك خبرة سابقة في التصدير؟", fr: "Expérience antérieure à l'exportation ?" },
+  "Oui, au moins une fois": { ar: "نعم، على الأقل مرة واحدة", fr: "Oui, au moins une fois" },
+  "Aucune (Novice)": { ar: "لا توجد (مبتدئ)", fr: "Aucune (Novice)" },
+  "Avis Conseiller :": { ar: "رأي المستشار:", fr: "Avis Conseiller :" },
+  "Calcul de l'Expérience en cours...": { ar: "جارٍ حساب التجربة...", fr: "Calcul de l'Expérience en cours..." },
+  "Lancer l'Analyse d'Ingénierie Export": { ar: "إطلاق التحليل الهندسي للتصدير", fr: "Lancer l'Analyse d'Ingénierie Export" },
+  "Taux d'Intérêt Estimé": { ar: "معدل الفائدة التقديري", fr: "Taux d'Intérêt Estimé" },
+  "Potentiel Douanier": { ar: "القدرة الجمركية", fr: "Potentiel Douanier" },
+  "Score Tamwilcom": { ar: "نقاط تمويلكم", fr: "Score Tamwilcom" },
+  "Garanties Recommandées (Accès Express)": { ar: "الضمانات الموصى بها (ولوج سريع)", fr: "Garanties Recommandées (Accès Express)" },
+  "Options de Banques (Réseau TPE/PME)": { ar: "خيارات الأبناك (شبكة المقاولات الصغيرة جدا /المتوسطة)", fr: "Options de Banques (Réseau TPE/PME)" },
+  "Télécharger en PDF": { ar: "تحميل بصيغة PDF", fr: "Télécharger en PDF" },
+  "Garantie Souveraine": { ar: "الضمان السيادي", fr: "Garantie Souveraine" },
+  "Match Banque Idéal": { ar: "البنك المثالي المطابق", fr: "Match Banque Idéal" },
+  "Rapport Financier Prêt": { ar: "التقرير المالي جاهز", fr: "Rapport Financier Prêt" },
+  "Créer une Nouvelle Fiche": { ar: "إنشاء بطاقة جديدة", fr: "Créer une Nouvelle Fiche" },
+  "Dépôt Physique & Guichet CRI (2026)": { ar: "الإيداع المادي وشباك المركز الجهوي للاستثمار (2026)", fr: "Dépôt Physique & Guichet CRI (2026)" },
+  "Générateur de Dossier National d'Investissement & Création PDF": { ar: "مُنشئ ملف الاستثمار الوطني وإنشاء PDF", fr: "Générateur de Dossier National d'Investissement & Création PDF" },
+  "Téléchargez l'intégralité de vos documents d'évaluation validés par l'expert IA compilés sous format certifié pour accélérer l'analyse auprès des banques d'affaires et faciliter le dépôt direct.": { ar: "قم بتنزيل كافة وثائق التقييم الخاصة بك المُصادق عليها من قبل خبير الذكاء الاصطناعي والمجمعة في صيغة معتمدة لتسريع التحليل لدى بنوك الأعمال وتسهيل الإيداع المباشر.", fr: "Téléchargez l'intégralité de vos documents d'évaluation validés par l'expert IA compilés sous format certifié pour accélérer l'analyse auprès des banques d'affaires et faciliter le dépôt direct." },
+  "1. Diagnostic Expert": { ar: "1. تشخيص الخبير", fr: "1. Diagnostic Expert" },
+  "Prêt (IA)": { ar: "جاهز (ذكاء اصطناعي)", fr: "Prêt (IA)" },
+  "2. Statuts de la SARL": { ar: "2. النظام الأساسي للشركة (SARL)", fr: "2. Statuts de la SARL" },
+  "Rédigé (IA)": { ar: "صُيغ (ذكاء اصطناعي)", fr: "Rédigé (IA)" },
+  "+ Rédiger": { ar: "+ صياغة", fr: "+ Rédiger" },
+  "3. Business Plan": { ar: "3. مخطط الأعمال", fr: "3. Business Plan" },
+  "+ Préparer": { ar: "+ إعداد", fr: "+ Préparer" },
+  "Télécharger le Dossier Complet Consolidé (PDF)": { ar: "تحميل الملف الكامل الموحد (PDF)", fr: "Télécharger le Dossier Complet Consolidé (PDF)" },
+  "Export Données Financières (CSV)": { ar: "تصدير البيانات المالية (CSV)", fr: "Export Données Financières (CSV)" },
+  "Exporter Metrics (CSV)": { ar: "تصدير المقاييس (CSV)", fr: "Exporter Metrics (CSV)" }
+};
+
+export const t = (key: string, lang: 'fr'|'ar', defaultVal?: string) => {
+  if (lang === 'fr') return defaultVal || key;
+  return translations[key]?.[lang] || defaultVal || key;
+};
+
 // Utility component to parse and pretty-render simple markdown strings
 function MarkdownViewer({ text }: { text: string }) {
   if (!text) return null;
@@ -902,19 +977,46 @@ export default function App() {
       <header className="bg-white/80 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-50 print:hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-600/20 shrink-0">
-              <Globe2 className="w-5 h-5 text-white" />
+            <div className="w-14 h-14 shrink-0 flex items-center justify-center">
+              <svg viewBox="0 0 200 200" fill="none" className="w-full h-full drop-shadow-sm" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="mt-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="#0ea5e9" />
+                    <stop offset="100%" stopColor="#1e3a8a" />
+                  </linearGradient>
+                </defs>
+                <path d="M100 20 L100 115" stroke="url(#mt-grad)" strokeWidth="4" strokeLinecap="round" />
+                <path d="M85 45 L85 100 L100 115" stroke="url(#mt-grad)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M115 45 L115 100 L100 115" stroke="url(#mt-grad)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M70 70 L70 115 L90 135" stroke="url(#mt-grad)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M130 70 L130 115 L110 135" stroke="url(#mt-grad)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                
+                <path d="M55 95 L55 130 L80 155" stroke="url(#mt-grad)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M145 95 L145 130 L120 155" stroke="url(#mt-grad)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+
+                <circle cx="100" cy="20" r="3" fill="#0ea5e9" />
+                <circle cx="85" cy="45" r="2.5" fill="#0ea5e9" />
+                <circle cx="115" cy="45" r="2.5" fill="#0ea5e9" />
+                <circle cx="70" cy="70" r="2" fill="#0ea5e9" />
+                <circle cx="130" cy="70" r="2" fill="#0ea5e9" />
+                <circle cx="55" cy="95" r="1.5" fill="#0ea5e9" />
+                <circle cx="145" cy="95" r="1.5" fill="#0ea5e9" />
+                
+                <text x="100" y="145" fontFamily="sans-serif" fontSize="24" fontWeight="800" fill="url(#mt-grad)" textAnchor="middle" letterSpacing="1">MT</text>
+                <text x="100" y="170" fontFamily="sans-serif" fontSize="22" fontWeight="900" fill="#1e3a8a" textAnchor="middle" letterSpacing="1">MEDIATOWER</text>
+                <text x="100" y="185" fontFamily="sans-serif" fontSize="6.5" fontWeight="700" fill="#0ea5e9" textAnchor="middle" letterSpacing="0.5">CONNECTING YOUR DIGITAL WORLD</text>
+              </svg>
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold tracking-widest text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full uppercase">
-                  Maroc 2026-2030
+                  {t("Maroc 2026-2030", appLang)}
                 </span>
                 <span className="text-slate-300">|</span>
-                <span className="text-xs text-slate-500 font-mono">Expert IA Génération Augmentée</span>
+                <span className="text-xs text-slate-500 font-mono">{t("Expert IA Génération Augmentée", appLang)}</span>
               </div>
               <h1 className="text-xl font-bold tracking-tight text-slate-900">
-                Maroc Entreprise Financement
+                {t("Maroc Entreprise Financement", appLang)}
               </h1>
             </div>
           </div>
@@ -930,7 +1032,7 @@ export default function App() {
             {lastSavedTime && (
               <div className="hidden md:flex items-center gap-1.5 bg-emerald-50/50 border border-emerald-100/80 rounded-lg px-2.5 py-1 text-[11px] font-medium text-emerald-800 font-mono">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
-                <span>Enregistré ({lastSavedTime})</span>
+                <span>{appLang === 'ar' ? `تم الحفظ (${lastSavedTime})` : `Enregistré (${lastSavedTime})`}</span>
               </div>
             )}
 
@@ -940,13 +1042,13 @@ export default function App() {
               title="Réinitialiser l'ensemble des données des formulaires"
               className="hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-slate-600 hover:text-rose-700 font-semibold py-1.5 px-3 rounded-xl text-xs transition duration-200 flex items-center gap-1.5 cursor-pointer bg-white"
             >
-              Réinitialiser
+              {t("Réinitialiser", appLang)}
             </button>
 
             <div className="h-8 w-px bg-slate-200 mx-1 hidden lg:block"></div>
 
             <p className="text-xs text-right hidden lg:block text-slate-500 select-none">
-              Conforme <br />
+              {t("Conforme", appLang)} <br />
               <strong>Tamwilcom / Douane</strong>
             </p>
             <div className="h-8 w-px bg-slate-200 mx-1 hidden lg:block"></div>
@@ -955,49 +1057,49 @@ export default function App() {
               className="bg-slate-900 hover:bg-slate-800 text-white font-medium py-2 px-4 rounded-xl text-xs transition duration-200 flex items-center gap-2"
             >
               <Briefcase className="w-3.5 h-3.5" />
-              Nouveau Dossier
+              {t("Nouveau Dossier", appLang)}
             </a>
           </div>
         </div>
       </header>
 
       {/* Hero Intro Banner Section */}
-      <section className="bg-gradient-to-br from-emerald-950 via-slate-900 to-slate-950 text-white py-12 px-4 relative overflow-hidden print:hidden">
+      <section className="bg-gradient-to-br from-emerald-950 via-slate-900 to-slate-950 text-white py-12 px-4 relative overflow-hidden print:hidden" dir={appLang === 'ar' ? 'rtl' : 'ltr'}>
         <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl -ml-32 -mb-32"></div>
 
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="max-w-3xl">
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight leading-none mb-2">
-              Maroc Entreprise Financement
+              {t("Maroc Entreprise Financement", appLang)}
             </h2>
             <p className="text-lg text-emerald-400 font-medium mb-5 tracking-wide">
-              Pour une stratégie de la croissance
+              {t("Pour une stratégie de la croissance", appLang)}
             </p>
             <p className="text-slate-200 text-sm sm:text-base leading-relaxed mb-5">
-              Votre conseiller stratégique propulsé par l'Intelligence Artificielle de Génération Augmentée. Conçu pour la période 2026-2030, il simplifie les démarches administratives et financières des entrepreneurs au Maroc : de la création et des formulaires CRI, jusqu'à la conformité avec l'Office des Changes et des douanes.
+              {appLang === 'ar' ? "مستشارك الاستراتيجي المدعوم بالذكاء الاصطناعي... مصمم للفترة 2026-2030 لتبسيط الإجراءات الإدارية والمالية للمقاولين بالمغرب." : "Votre conseiller stratégique propulsé par l'Intelligence Artificielle de Génération Augmentée. Conçu pour la période 2026-2030, il simplifie les démarches administratives et financières des entrepreneurs au Maroc : de la création et des formulaires CRI, jusqu'à la conformité avec l'Office des Changes et des douanes."}
             </p>
             
             <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 sm:p-5 border border-white/10 mb-8 shadow-lg">
               <p className="font-semibold text-emerald-300 mb-3 text-sm">
-                Un Copilote intelligent, moderne, synthétique et pratique. Orienté entrepreneur pour :
+                {t("Un Copilote intelligent, moderne, synthétique et pratique. Orienté entrepreneur pour :", appLang)}
               </p>
               <ul className="space-y-2.5 text-sm text-slate-300">
                 <li className="flex items-start">
                   <span className="text-emerald-400 mr-2 mt-0.5">•</span>
-                  <span><strong className="text-white font-semibold">L’Ingénierie financière :</strong> Identifier les garanties et solutions de co-financement Tamwilcom adaptées à votre activité.</span>
+                  <span><strong className="text-white font-semibold">{t("L’Ingénierie financière :", appLang)}</strong> {t("Identifier les garanties et solutions de co-financement Tamwilcom adaptées à votre activité.", appLang)}</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-emerald-400 mr-2 mt-0.5">•</span>
-                  <span><strong className="text-white font-semibold">L’Accompagnement Export :</strong> Structurer votre développement en conformité avec la réglementation des changes et de la douane.</span>
+                  <span><strong className="text-white font-semibold">{t("L’Accompagnement Export :", appLang)}</strong> {t("Structurer votre développement en conformité avec la réglementation des changes et de la douane.", appLang)}</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-emerald-400 mr-2 mt-0.5">•</span>
-                  <span><strong className="text-white font-semibold">La Simplification Administrative :</strong> Générer vos statuts de SARL personnalisés et préparer votre dossier unique pour le Centre Régional d'Investissement (CRI).</span>
+                  <span><strong className="text-white font-semibold">{t("La Simplification Administrative :", appLang)}</strong> {t("Générer vos statuts de SARL personnalisés et préparer votre dossier unique pour le Centre Régional d'Investissement (CRI).", appLang)}</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-emerald-400 mr-2 mt-0.5">•</span>
-                  <span><strong className="text-white font-semibold">Le Business Plan :</strong> Rédiger des synthèses financières solides prêtes pour les banques partenaires.</span>
+                  <span><strong className="text-white font-semibold">{t("Le Business Plan :", appLang)}</strong> {t("Rédiger des synthèses financières solides prêtes pour les banques partenaires.", appLang)}</span>
                 </li>
               </ul>
             </div>
@@ -1005,7 +1107,7 @@ export default function App() {
             {/* Quick Demo cases */}
             <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
               <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider block mb-2.5">
-                ⚡ Charger un profil type pour tester instantanément :
+                {t("⚡ Charger un profil type pour tester instantanément :", appLang)}
               </span>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 {PRESETS.map((p, idx) => (
@@ -1016,15 +1118,15 @@ export default function App() {
                     className="bg-white/5 hover:bg-white/10 border border-white/10 hover:border-emerald-500/30 rounded-xl p-3 text-left transition duration-200 flex flex-col justify-between group cursor-pointer"
                   >
                     <div>
-                      <p className="text-xs font-bold text-white group-hover:text-emerald-400 font-sans transition">
+                      <p className="text-xs font-bold text-white group-hover:text-emerald-400 font-sans transition" dir="auto">
                         {p.name}
                       </p>
-                      <p className="text-[11px] text-slate-400 mt-1 line-clamp-2">
+                      <p className="text-[11px] text-slate-400 mt-1 line-clamp-2" dir="auto">
                         {p.description}
                       </p>
                     </div>
                     <div className="flex items-center gap-1 text-[10px] text-emerald-400 font-semibold mt-2 pt-2 border-t border-white/5 w-full">
-                      <span>Simuler</span>
+                      <span>{t("Simuler", appLang)}</span>
                       <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition duration-200" />
                     </div>
                   </button>
@@ -1036,7 +1138,7 @@ export default function App() {
       </section>
 
       {/* Core Main Grid Application space */}
-      <main id="generate-section" className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main id="generate-section" className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8" dir={appLang === 'ar' ? 'rtl' : 'ltr'}>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* Left panel form setup */}
@@ -1044,7 +1146,7 @@ export default function App() {
             <div className="flex items-center gap-2 mb-4">
               <Building2 className="w-5 h-5 text-emerald-600" />
               <h3 className="text-lg font-bold text-slate-900">
-                Profil de la PME & Projet d'Export
+                {t("Profil de la PME & Projet d'Export", appLang)}
               </h3>
             </div>
 
@@ -1052,7 +1154,7 @@ export default function App() {
               {/* Company details */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Nom de l'entreprise ou Marque
+                  {t("Nom de l'entreprise ou Marque", appLang)}
                 </label>
                 <div className="relative">
                   <input
@@ -1070,7 +1172,7 @@ export default function App() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                    Secteur d'activité
+                    {t("Secteur d'activité", appLang)}
                   </label>
                   <select
                     value={formData.industry}
@@ -1085,7 +1187,7 @@ export default function App() {
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                    Région d'origine au Maroc
+                    {t("Région d'origine au Maroc", appLang)}
                   </label>
                   <select
                     value={formData.region}
@@ -1101,7 +1203,7 @@ export default function App() {
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Chiffre d'affaires annuel
+                  {t("Chiffre d'affaires annuel", appLang)}
                 </label>
                 <select
                   value={formData.currentRevenue}
@@ -1116,7 +1218,7 @@ export default function App() {
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Besoin clé de financement
+                  {t("Besoin clé de financement", appLang)}
                 </label>
                 <select
                   value={formData.fundingNeeded}
@@ -1132,7 +1234,7 @@ export default function App() {
               {/* Destination & Export experience details */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Zone d'exportation cible en Afrique subsaharienne
+                  {t("Zone d'exportation cible en Afrique subsaharienne", appLang)}
                 </label>
                 <select
                   value={formData.targetAfricanRegion}
@@ -1149,7 +1251,7 @@ export default function App() {
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Produit ou Service à exporter
+                  {t("Produit ou Service à exporter", appLang)}
                 </label>
                 <input
                   type="text"
@@ -1164,7 +1266,7 @@ export default function App() {
               {/* Export experience toggle with beautiful switches */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                  Expérience antérieure à l'exportation ?
+                  {t("Expérience antérieure à l'exportation ?", appLang)}
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   <button
@@ -1177,7 +1279,7 @@ export default function App() {
                     }`}
                   >
                     <CheckCircle2 className="w-3.5 h-3.5" />
-                    Oui, au moins une fois
+                    {t("Oui, au moins une fois", appLang)}
                   </button>
                   <button
                     type="button"
@@ -1189,7 +1291,7 @@ export default function App() {
                     }`}
                   >
                     <AlertCircle className="w-3.5 h-3.5" />
-                    Aucune (Novice)
+                    {t("Aucune (Novice)", appLang)}
                   </button>
                 </div>
               </div>
@@ -1198,7 +1300,7 @@ export default function App() {
               <div className="bg-emerald-50 border-l-4 border-emerald-600 p-3.5 rounded-xl text-[11px] text-emerald-950 flex gap-2.5">
                 <Bookmark className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
                 <div>
-                  <strong>Avis Conseiller :</strong> Les entreprises marocaines de moins de 200M MAD de chiffre d'affaires et de moins de 200 salariés sont 100% éligibles au fond de garantie automatic de <strong>Tamwilcom</strong> (Damane Export, Damane Express, etc.).
+                  <strong>{t("Avis Conseiller :", appLang)}</strong> {appLang === 'ar' ? "الشركات المغربية التي يقل رقم معاملاتها عن 200 مليون درهم وأقل من 200 موظف مؤهلة بنسبة 100٪ لصندوق الضمان التلقائي لضمانكم (ضمان تصدير، ضمان إكسبريس، إلخ)." : "Les entreprises marocaines de moins de 200M MAD de chiffre d'affaires et de moins de 200 salariés sont 100% éligibles au fond de garantie automatic de Tamwilcom (Damane Export, Damane Express, etc.)."}
                 </div>
               </div>
 
@@ -1218,12 +1320,12 @@ export default function App() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
-                    <span>Calcul de l'Expérience en cours...</span>
+                    <span>{t("Calcul de l'Expérience en cours...", appLang)}</span>
                   </>
                 ) : (
                   <>
                     <TrendingUp className="w-4 h-4" />
-                    <span>Lancer l'Analyse d'Ingénierie Export</span>
+                    <span>{t("Lancer l'Analyse d'Ingénierie Export", appLang)}</span>
                   </>
                 )}
               </button>
@@ -1240,7 +1342,7 @@ export default function App() {
                   %
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Taux d'Intérêt Estimé</p>
+                  <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">{t("Taux d'Intérêt Estimé", appLang)}</p>
                   <p className="text-sm font-bold text-orange-300 font-mono">{dynamicMetrics.estimatedTaeg}</p>
                 </div>
               </div>
@@ -1250,7 +1352,7 @@ export default function App() {
                   <FileCheck className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Garantie Souveraine</p>
+                  <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">{t("Garantie Souveraine", appLang)}</p>
                   <p className="text-sm font-bold text-emerald-300 font-sans">{dynamicMetrics.optimalProgram}</p>
                 </div>
               </div>
@@ -1260,7 +1362,7 @@ export default function App() {
                   <Ship className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Match Banque Idéal</p>
+                  <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">{t("Match Banque Idéal", appLang)}</p>
                   <p className="text-sm font-bold text-blue-300">{matchedBanks[0].name}</p>
                 </div>
               </div>
@@ -1277,14 +1379,14 @@ export default function App() {
                   <div>
                     <span className="inline-flex items-center gap-1.5 text-[9px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-200 uppercase px-2 py-0.5 rounded-full mb-1.5 font-mono">
                       <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full animate-pulse"></span>
-                      Dépôt Physique & Guichet CRI (2026)
+                      {t("Dépôt Physique & Guichet CRI (2026)", appLang)}
                     </span>
                     <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-1.5">
                       <FileCheck className="w-5 h-5 text-emerald-700 shrink-0" />
-                      Générateur de Dossier National d'Investissement & Création PDF
+                      {t("Générateur de Dossier National d'Investissement & Création PDF", appLang)}
                     </h3>
                     <p className="text-xs text-slate-600 mt-1">
-                      Téléchargez l'intégralité de vos documents d'évaluation validés par l'expert IA compilés sous format certifié pour accélérer l'analyse auprès des banques d'affaires et faciliter le dépôt direct.
+                      {t("Téléchargez l'intégralité de vos documents d'évaluation validés par l'expert IA compilés sous format certifié pour accélérer l'analyse auprès des banques d'affaires et faciliter le dépôt direct.", appLang)}
                     </p>
                   </div>
                 </div>
@@ -1292,13 +1394,13 @@ export default function App() {
                 {/* Checklist with status indicator badges */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
                   <div className="bg-white rounded-2xl p-3 border border-slate-200/60 flex items-center justify-between shadow-sm">
-                    <span className="text-xs font-semibold text-slate-700">1. Diagnostic Expert</span>
-                    <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full uppercase">Prêt (IA)</span>
+                    <span className="text-xs font-semibold text-slate-700">{t("1. Diagnostic Expert", appLang)}</span>
+                    <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full uppercase">{t("Prêt (IA)", appLang)}</span>
                   </div>
                   <div className="bg-white rounded-2xl p-3 border border-slate-200/60 flex items-center justify-between shadow-sm">
-                    <span className="text-xs font-semibold text-slate-700">2. Statuts de la SARL</span>
+                    <span className="text-xs font-semibold text-slate-700">{t("2. Statuts de la SARL", appLang)}</span>
                     {bylawsResponse ? (
-                      <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full uppercase">Rédigé (IA)</span>
+                      <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full uppercase">{t("Rédigé (IA)", appLang)}</span>
                     ) : (
                       <button 
                         type="button"
@@ -1307,14 +1409,14 @@ export default function App() {
                         }}
                         className="text-[9px] font-bold text-indigo-700 hover:text-indigo-900 bg-indigo-50 px-2.5 py-1 rounded-full cursor-pointer transition hover:bg-indigo-100"
                       >
-                        + Rédiger
+                        {t("+ Rédiger", appLang)}
                       </button>
                     )}
                   </div>
                   <div className="bg-white rounded-2xl p-3 border border-slate-200/60 flex items-center justify-between shadow-sm">
-                    <span className="text-xs font-semibold text-slate-700">3. Business Plan</span>
+                    <span className="text-xs font-semibold text-slate-700">{t("3. Business Plan", appLang)}</span>
                     {bpResponse ? (
-                      <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full uppercase">Rédigé (IA)</span>
+                      <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full uppercase">{t("Rédigé (IA)", appLang)}</span>
                     ) : (
                       <button 
                         type="button"
@@ -1323,7 +1425,7 @@ export default function App() {
                         }}
                         className="text-[9px] font-bold text-indigo-700 hover:text-indigo-900 bg-indigo-50 px-2.5 py-1 rounded-full cursor-pointer transition hover:bg-indigo-100"
                       >
-                        + Préparer
+                        {t("+ Préparer", appLang)}
                       </button>
                     )}
                   </div>
@@ -1337,7 +1439,7 @@ export default function App() {
                     className="flex-1 bg-emerald-700 hover:bg-emerald-800 text-white py-3 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition shadow-md shadow-emerald-700/10 cursor-pointer"
                   >
                     <Download className="w-4 h-4 shrink-0" />
-                    Télécharger le Dossier Complet Consolidé (PDF)
+                    {t("Télécharger le Dossier Complet Consolidé (PDF)", appLang)}
                   </button>
 
                   <button
@@ -1346,7 +1448,7 @@ export default function App() {
                     className="bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition shadow-md shadow-blue-600/10 cursor-pointer"
                   >
                     <Download className="w-4 h-4 shrink-0" />
-                    Exporter Metrics (CSV)
+                    {t("Exporter Metrics (CSV)", appLang)}
                   </button>
 
                   <div className="flex gap-2 shrink-0">

@@ -260,9 +260,7 @@ app.post("/api/chat", async (req, res) => {
     const contents = history ? [...history] : [];
     contents.push({ role: "user", parts: [{ text: message }] });
 
-    const langInstruction = lang === 'ar' 
-      ? "\n\nTu es maintenant dans un mode Chat conversationnel. Réponds DIRECTEMENT ET EXCLUSIVEMENT EN ARABE (العربية). Sois concis et professionnel."
-      : "\n\nTu es maintenant dans un mode Chat conversationnel. Réponds DIRECTEMENT ET EXCLUSIVEMENT EN FRANÇAIS. Sois concis et professionnel.";
+    const langInstruction = "\n\nTu es maintenant dans un mode Chat conversationnel. RÈGLE ABSOLUE : Détecte la langue du dernier message de l'utilisateur (Français, Arabe ou Darija) et réponds-lui systématiquement dans la même langue de manière fluide. Sois concis et professionnel.";
 
     const response = await ai.models.generateContent({
       model: "gemini-3.5-flash",
@@ -310,7 +308,7 @@ async function startServer() {
   // Ne démarrer le serveur (app.listen) que si on n'est pas sur Vercel
   // Vercel utilise le module exporté pour son infrastructure Serverless.
   if (!process.env.VERCEL) {
-    app.listen(PORT, "0.0.0.0", () => {
+    app.listen(Number(PORT), "0.0.0.0", () => {
       console.log(`Server running on port ${PORT}`);
     });
   }
