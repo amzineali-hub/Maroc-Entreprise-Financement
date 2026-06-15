@@ -253,16 +253,20 @@ app.post("/api/generate-business-plan", async (req, res) => {
 
 app.post("/api/chat", async (req, res) => {
   try {
-    const { history, message } = req.body;
+    const { history, message, lang } = req.body;
     
     const contents = history ? [...history] : [];
     contents.push({ role: "user", parts: [{ text: message }] });
+
+    const langInstruction = lang === 'ar' 
+      ? "\n\nTu es maintenant dans un mode Chat conversationnel. Réponds DIRECTEMENT ET EXCLUSIVEMENT EN ARABE (العربية). Sois concis et professionnel."
+      : "\n\nTu es maintenant dans un mode Chat conversationnel. Réponds DIRECTEMENT ET EXCLUSIVEMENT EN FRANÇAIS. Sois concis et professionnel.";
 
     const response = await ai.models.generateContent({
       model: "gemini-3.5-flash",
       contents: contents,
       config: {
-        systemInstruction: SYSTEM_INSTRUCTION + "\n\nTu es maintenant dans un mode Chat conversationnel. Réponds directement, sans trop de formatage complexe, comme un vrai conseiller interactif. Sois concis et professionnel.",
+        systemInstruction: SYSTEM_INSTRUCTION + langInstruction,
         temperature: 0.7,
       },
     });
