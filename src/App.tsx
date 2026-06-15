@@ -32,7 +32,11 @@ import {
   Briefcase,
   HelpCircle,
   CheckSquare,
-  Square
+  Square,
+  MessageSquare,
+  X,
+  Send,
+  Bot
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { jsPDF } from "jspdf";
@@ -258,6 +262,12 @@ export default function App() {
 
   // State to track auto-save visual feedback "Enregistré"
   const [lastSavedTime, setLastSavedTime] = useState<string | null>(null);
+
+  // Chatbot states
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState<{role: string, text: string}[]>([]);
+  const [chatInput, setChatInput] = useState("");
+  const [chatLoading, setChatLoading] = useState(false);
 
   // Write variables inside localStorage whenever they change
   useEffect(() => {
@@ -839,6 +849,44 @@ export default function App() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const handleSendMessage = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!chatInput.trim() || chatLoading) return;
+
+    const userMessage = chatInput.trim();
+    setChatInput("");
+    setChatMessages((prev) => [...prev, { role: "user", text: userMessage }]);
+    setChatLoading(true);
+
+    try {
+      const formattedHistory = chatMessages.map(msg => ({
+        role: msg.role === "user" ? "user" : "model",
+        parts: [{ text: msg.text }]
+      }));
+
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          history: formattedHistory,
+          message: userMessage
+        }),
+      });
+      const data = await res.json();
+      
+      if (res.ok && data.success) {
+        setChatMessages((prev) => [...prev, { role: "model", text: data.text }]);
+      } else {
+        setChatMessages((prev) => [...prev, { role: "model", text: "Je suis désolé, je n'ai pas pu vous répondre en ce moment." }]);
+      }
+    } catch (e) {
+      console.error(e);
+      setChatMessages((prev) => [...prev, { role: "model", text: "Erreur de connexion. Veuillez réessayer." }]);
+    } finally {
+      setChatLoading(false);
+    }
   };
 
   return (
@@ -2126,6 +2174,99 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* Floating Chatbot */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end print:hidden">
+        <AnimatePresence>
+          {chatOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-[350px] sm:w-[400px] flex flex-col overflow-hidden mb-4"
+              style={{ maxHeight: '600px', height: 'calc(100vh - 120px)' }}
+            >
+              <div className="bg-emerald-900 text-white p-4 flex items-center justify-between shadow-md z-10 shrink-0">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-emerald-800 flex items-center justify-center border border-emerald-700">
+                    <Bot className="w-4 h-4 text-emerald-100" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-sm">Expert Économie Marocaine</h3>
+                    <p className="text-[10px] text-emerald-300">Consultant IA - 2026-2030</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setChatOpen(false)}
+                  className="text-emerald-300 hover:text-white transition p-1 hover:bg-emerald-800 rounded-full"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              
+              <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50 flex flex-col">
+                {chatMessages.length === 0 && (
+                  <div className="text-center text-slate-500 text-xs my-auto italic p-4 bg-white rounded-xl border border-slate-100 shadow-sm">
+                    👋 Bonjour, je suis un expert de haut niveau en économie marocaine, développement économique, et financement (Tamwilcom, Intelaka). Posez-moi vos questions.
+                  </div>
+                )}
+                {chatMessages.map((msg, i) => (
+                  <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div 
+                      className={`max-w-[85%] rounded-2xl p-3 text-sm ${
+                        msg.role === 'user' 
+                          ? 'bg-emerald-600 text-white rounded-br-sm' 
+                          : 'bg-white border border-slate-200 text-slate-700 rounded-bl-sm shadow-sm'
+                      }`}
+                    >
+                      <MarkdownViewer text={msg.text} />
+                    </div>
+                  </div>
+                ))}
+                {chatLoading && (
+                  <div className="flex justify-start">
+                    <div className="max-w-[85%] rounded-2xl p-3 text-sm bg-white border border-slate-200 text-slate-500 rounded-bl-sm shadow-sm flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse delay-75"></span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse delay-150"></span>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              <div className="p-3 bg-white border-t border-slate-200 shrink-0">
+                <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    placeholder="Posez votre question à l'expert..."
+                    className="flex-1 bg-slate-50 border border-slate-200 text-sm rounded-full px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition"
+                  />
+                  <button
+                    type="submit"
+                    disabled={chatLoading || !chatInput.trim()}
+                    className="w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                  >
+                    <Send className="w-4 h-4 ml-0.5" />
+                  </button>
+                </form>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
+        {!chatOpen && (
+          <button
+            onClick={() => setChatOpen(true)}
+            className="w-14 h-14 bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-105 hover:bg-emerald-700 hover:shadow-emerald-900/20 transition-all border-4 border-white"
+          >
+            <MessageSquare className="w-6 h-6" />
+          </button>
+        )}
+      </div>
+
     </div>
   );
 }

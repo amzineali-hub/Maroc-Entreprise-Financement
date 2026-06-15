@@ -1,6 +1,5 @@
 import express from "express";
 import path from "path";
-import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
 
@@ -9,7 +8,7 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Initialize the GoogleGenAI client with server secret
 const ai = new GoogleGenAI({
@@ -252,27 +251,67 @@ app.post("/api/generate-business-plan", async (req, res) => {
   }
 });
 
+app.post("/api/chat", async (req, res) => {
+  try {
+    const { history, message } = req.body;
+    
+    const contents = history ? [...history] : [];
+    contents.push({ role: "user", parts: [{ text: message }] });
+
+    const response = await ai.models.generateContent({
+      model: "gemini-3.5-flash",
+      contents: contents,
+      config: {
+        systemInstruction: SYSTEM_INSTRUCTION + "\n\nTu es maintenant dans un mode Chat conversationnel. Réponds directement, sans trop de formatage complexe, comme un vrai conseiller interactif. Sois concis et professionnel.",
+        temperature: 0.7,
+      },
+    });
+
+    res.json({
+      success: true,
+      text: response.text,
+    });
+  } catch (error: any) {
+    console.error("Erreur d'analyse Gemini Chat:", error);
+    res.status(500).json({
+      error: "Une erreur est survenue lors de la conversation.",
+      details: error.message || error,
+    });
+  }
+});
+
 // Serve client assets in dev or production
 async function startServer() {
   if (process.env.NODE_ENV !== "production") {
+    const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
     });
     app.use(vite.middlewares);
   } else {
+    // Dans l'environnement Vercel, on ne sert pas les statiques via express 
+    // car Vercel's Edge/Static routing le fait déjà. On ajoute un fallback classique au besoin.
     const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));
     app.get("*", (req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
+      if (!req.url.startsWith('/api')) {
+         res.sendFile(path.join(distPath, "index.html"));
+      }
     });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on port ${PORT}`);
-  });
+  // Ne démarrer le serveur (app.listen) que si on n'est pas sur Vercel
+  // Vercel utilise le module exporté pour son infrastructure Serverless.
+  if (!process.env.VERCEL) {
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  }
 }
 
 startServer().catch((err) => {
   console.error("Failed to start server:", err);
 });
+
+export default app;
