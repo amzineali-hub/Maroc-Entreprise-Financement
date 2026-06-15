@@ -1,0 +1,5 @@
+{
+  "name": "Maroc Entreprise Financement",
+  "description": "Conseiller d'analyse et de financement pour les TPME au Maroc.",
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
