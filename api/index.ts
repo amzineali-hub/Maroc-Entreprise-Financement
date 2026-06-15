@@ -72,6 +72,7 @@ app.post("/api/analyze", async (req, res) => {
       hasPriorExportExperience,
       exportProduct,
       fundingNeeded,
+      lang,
     } = req.body;
 
     // Validate request
@@ -89,7 +90,7 @@ app.post("/api/analyze", async (req, res) => {
 - Type de besoin de financement identifié : ${fundingNeeded || "Besoin d'exploitation ou d'amorçage export"}
 - Expérience préalable à l'export : ${hasPriorExportExperience ? "Oui, dispose d'une première expérience" : "Non, est novice en matière d'exportation"}
 
-Rédige un rapport stratégique et d'ingénierie financière ciblé selon ces paramètres. Reste aligné sur la réalité économique marocaine de l'année 2026.`;
+Rédige un rapport stratégique et d'ingénierie financière ciblé selon ces paramètres. Reste aligné sur la réalité économique marocaine de l'année 2026. ${lang === 'ar' ? 'Veuillez rédiger le rapport final INTÉGRALEMENT ET EXCLUSIVEMENT EN ARABE (العربية).' : 'Veuillez rédiger le rapport final EN FRANÇAIS.'}`;
 
     const response = await ai.models.generateContent({
       model: "gemini-3.5-flash",
@@ -117,7 +118,7 @@ Rédige un rapport stratégique et d'ingénierie financière ciblé selon ces pa
 // New endpoint to generate full Moroccan SARL Bylaws templates using AI
 app.post("/api/generate-bylaws", async (req, res) => {
   try {
-    const { companyName, capital, managerName, region, industry, sharesCount } = req.body;
+    const { companyName, capital, managerName, region, industry, sharesCount, lang } = req.body;
     
     const company = companyName || "NOM_DE_LA_SOCIETE";
     const capValue = capital || "100 000";
@@ -136,7 +137,7 @@ app.post("/api/generate-bylaws", async (req, res) => {
     - Siège social : ${city}, Maroc
     - Objet social de l'entreprise : ${businessField} et activités de commerce d'import-export connexes.
     
-    Rédige l'intégralité des articles indispensables (de l'Article 1 à l'Article 15 au moins) avec des clauses de libération du capital, cession de parts, gérance, et dissolution, adaptées à la loi marocaine de manière exhaustive et réaliste pour l'année 2026. Reste neutre et extrêmement structuré au format Markdown.`;
+    Rédige l'intégralité des articles indispensables (de l'Article 1 à l'Article 15 au moins) avec des clauses de libération du capital, cession de parts, gérance, et dissolution, adaptées à la loi marocaine de manière exhaustive et réaliste pour l'année 2026. Reste neutre et extrêmement structuré au format Markdown. ${lang === 'ar' ? 'Veuillez rédiger les statuts INTÉGRALEMENT ET EXCLUSIVEMENT EN ARABE (العربية).' : 'Veuillez rédiger les statuts EN FRANÇAIS.'}`;
 
     const response = await ai.models.generateContent({
       model: "gemini-3.5-flash",
@@ -169,7 +170,8 @@ app.post("/api/generate-business-plan", async (req, res) => {
       exportProduct,
       fundingNeeded,
       investmentDescription,
-      expectedMargins
+      expectedMargins,
+      lang
     } = req.body;
 
     const company = companyName || "Atlas Agro";
@@ -205,7 +207,7 @@ app.post("/api/generate-business-plan", async (req, res) => {
       3. PLAN TECHNIQUE & MODÈLE FINANCIER SAAS (Tarification par abonnement MRR/ARR, passerelle de paiement [CMI/Paddle/Stripe], conformité douanière logicielle avec l'Office des Changes en mobilisant la Dotation Technologique de 500k-1M MAD pour financer les serveurs cloud AWS/Vercel/API Gemini et le compte de devises d'exportateur)
       4. PLAN FINANCIER PRÉVISIONNEL (Tableau de l'investissement initial, Tableau du besoin en fonds de roulement BFR de développement [salaires des dev, serveurs], et tableau prévisionnel d'amortissement / rentabilité à 3 ans avec marge de ${margins}).
       
-      Reste très rigoureux, chiffré et réaliste sur les coûts d'infrastructure, de serveurs de calcul IA, et taux de croissance d'un SaaS en 2026.`;
+      Reste très rigoureux, chiffré et réaliste sur les coûts d'infrastructure, de serveurs de calcul IA, et taux de croissance d'un SaaS en 2026. ${lang === 'ar' ? 'Veuillez rédiger le Business Plan INTÉGRALEMENT ET EXCLUSIVEMENT EN ARABE (العربية).' : 'Veuillez rédiger le Business Plan EN FRANÇAIS.'}`;
 
       bpSystemInstruction = "Tu es un directeur de cabinet-conseil en capital-risque (VC) de premier ordre au Maroc, spécialisé dans la structuration financière et la levée de fonds (Tamwilcom Fonds Innov Invest, Seed Rounds) pour startups technologiques SaaS, IA et e-commerce. Rédige un Business Plan SaaS impeccable au format financier professionnel.";
     } else {
@@ -227,7 +229,7 @@ app.post("/api/generate-business-plan", async (req, res) => {
       3. PLAN LOGISTIQUE & DISTRIBUTION (Axe terrestre via El Guerguerat ou maritime Tanger Med vers les ports subsahariens)
       4. PLAN FINANCIER PRÉVISIONNEL (Tableau d'investissement initial, Tableau du besoin en fonds de roulement BFR à l'export, et Tableau des prévisions d'amortissement / rentabilité à 3 ans avec marge de ${margins}).
       
-      Reste très rigoureux et réaliste sur les coûts, taux et régulations d'export en 2026.`;
+      Reste très rigoureux et réaliste sur les coûts, taux et régulations d'export en 2026. ${lang === 'ar' ? 'Veuillez rédiger le Business Plan INTÉGRALEMENT ET EXCLUSIVEMENT EN ARABE (العربية).' : 'Veuillez rédiger le Business Plan EN FRANÇAIS.'}`;
 
       bpSystemInstruction = "Tu es un directeur de cabinet-conseil de premier ordre au Maroc, spécialisé dans la levée de fonds pour PME et les investissements à l'export vers l'Afrique subsaharienne. Rédige un Business Plan de premier choix sous format financier professionnel.";
     }

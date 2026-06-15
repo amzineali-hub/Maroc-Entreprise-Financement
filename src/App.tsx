@@ -269,6 +269,7 @@ export default function App() {
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
   const [chatLang, setChatLang] = useState<'fr'|'ar'>('fr');
+  const [appLang, setAppLang] = useState<'fr'|'ar'>('fr');
 
   // Write variables inside localStorage whenever they change
   useEffect(() => {
@@ -376,7 +377,8 @@ export default function App() {
           managerName: sarlInputs.managerName,
           region: sarlInputs.region,
           industry: sarlInputs.industry,
-          sharesCount: sarlInputs.sharesCount
+          sharesCount: sarlInputs.sharesCount,
+          lang: appLang
         })
       });
       const data = await res.json();
@@ -410,7 +412,8 @@ export default function App() {
           exportProduct: formData.exportProduct,
           fundingNeeded: formData.fundingNeeded,
           investmentDescription: bpInputs.investmentDescription,
-          expectedMargins: bpInputs.expectedMargins
+          expectedMargins: bpInputs.expectedMargins,
+          lang: appLang
         })
       });
       const data = await res.json();
@@ -505,7 +508,7 @@ export default function App() {
       const response = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({...formData, lang: appLang}),
       });
 
       const data = await response.json();
@@ -917,6 +920,13 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => setAppLang(appLang === 'fr' ? 'ar' : 'fr')}
+              className="text-xs font-bold w-10 h-7 flex items-center justify-center bg-emerald-900 hover:bg-emerald-800 border border-emerald-700/50 rounded-md text-emerald-50 transition"
+              title="Changer de langue pour les documents générés / تغيير لغة المستندات"
+            >
+              {appLang === 'fr' ? 'AR' : 'FR'}
+            </button>
             {lastSavedTime && (
               <div className="hidden md:flex items-center gap-1.5 bg-emerald-50/50 border border-emerald-100/80 rounded-lg px-2.5 py-1 text-[11px] font-medium text-emerald-800 font-mono">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
