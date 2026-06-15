@@ -2292,7 +2292,7 @@ export default function App() {
       </footer>
 
       {/* Floating Chatbot */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end print:hidden">
+      <div className={`fixed bottom-6 ${appLang === 'ar' ? 'left-6 items-start' : 'right-6 items-end'} z-50 flex flex-col print:hidden`}>
         <AnimatePresence>
           {chatOpen && (
             <motion.div
